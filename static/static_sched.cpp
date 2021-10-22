@@ -4,6 +4,9 @@
 #include <string.h>
 #include <chrono>
 #include <cmath>
+#include <thread>
+#include <vector>
+#include "seq_loop.hpp"
 
 
 #ifdef __cplusplus
@@ -19,76 +22,67 @@ float f4(float x, int intensity);
 }
 #endif
 
-using namespace std::chrono;
-
 float get_function_value(int f,float x, int intensity) {
     switch(f) {
-      case 1:
-          return f1(x, intensity);
-          break;
-      case 2:
-          return f2(x, intensity);
-          break;
-      case 3:
-          return f3(x, intensity);
-          break;
-      case 4:
-          return f4(x, intensity);
-          break;
-  }
-  
-  std::cout << "Error: f is not valid.\n";
-  return 0.0f;
+        case 1:
+            return f1(x, intensity);
+            break;
+        case 2:
+            return f2(x, intensity);
+            break;
+        case 3:
+            return f3(x, intensity);
+            break;
+        case 4:
+            return f4(x, intensity);
+            break;
+        default:
+            return -1;
+    }
 }
 
 int main (int argc, char* argv[]) {
 
-  if (argc < 7) {
-    std::cerr<<"usage: "<<argv[0]<<" <functionid> <a> <b> <n> <intensity> <nbthreads>"<<std::endl;
-    return -1;
-  }
-  
-  int fuctionID    = atoi(argv[1]);
-  float lowerBound = atof(argv[2]); // This is a
-  float upperBound = atof(argv[3]); // This is b
-  int n            = atoi(argv[4]);
-  int intensity    = atoi(argv[5]);
-  int nbthreads    = atoi(argv[6]);
-  
-  auto startTime = system_clock::now();
-  
-  float result = 0;
-  float start = (upperBound - lowerBound) / static_cast<float>(n);
+    if (argc < 7) {
+        std::cerr<<"usage: "<<argv[0]<<" <functionid> <a> <b> <n> <intensity> <nbthreads>"<<std::endl;
+        return -1;
+    }
+    int functionID = atoi(argv[1]);
+    float a = atoi(argv[2]);
+    float b = atoi(argv[3]);
+    float n = atof(argv[4]);
+    int intensity = atoi(argv[5]);
+    int nbthreads = atoi(argv[6]);
+    float x = 0.0;
+    
 
-  float temp = 0.0f;
-  
-  SeqLoop sl;
-  
-  sl.set_thread_count(nbthreads);
-  
-  sl.parfor_parallel<float>(0, n, 1,
+    auto start = std::chrono::steady_clock::now();
+    float t1 = (b-a) / n;
+    float temp = 0.0f;
+
+    SeqLoop s1; 
+
+    s1.set_thread_count(nbthreads);
+
+    s1.parfor_parallel<float>(0, n, 1,
     [&](float& tls) -> void{ // Before
-      tls = 0;
+        tls = 0;
     },
     [&](int i, float& tls) -> void{
-      float x_value = lowerBound + (i + 0.5f) * start;
-      tls += get_function_value(fuctionID, x_value, intensity);
+        float x_value = a + (i + 0.5f) * t1;
+        tls += get_function_value(functionID, x_value, intensity);
     },
     [&](float& tls) -> void{ // After
-      temp += tls;
+        temp += tls;
     }
-  );
-  result = start * temp;
-  
-  std::cout << result;
-  
-  auto stopTime = system_clock::now();
-  
-  std::chrono::duration<double> diff = stopTime - startTime;
-  
-  
-  std::cerr << diff.count();
-  
-  
-  return 0;
+    );
+
+    x = t1 * temp;
+
+    std::cout << x;
+
+    auto finish = std::chrono::steady_clock::now();
+    std::chrono::duration<double> time_elapsed = finish-start;
+    std::cerr<<time_elapsed.count();
+    return 0;
 }
