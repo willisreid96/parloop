@@ -24,12 +24,12 @@ int main (int argc, char* argv[]) {
     return -1;
   }
  int functionID = std::stoi (argv[i]);
-  int a = std::stoi (argv[2]);
-  int b = std::stoi (argv[3]);
-  int n = std::stoi (argv[4]);
-  int intensity = std::stoi (argv[5]);
-  int nbthreads = std::stoi (argv[6]);
-  int granularity = std::stoi (argv[7]);
+  int a = atoi (argv[2]);
+  int b = atoi  (argv[3]);
+  int n = atoi  (argv[4]);
+  int intensity =  atoi(argv[5]);
+  int nbthreads =  atoi(argv[6]);
+  int granularity = atoi (argv[7]);
   
   
   float ban = 1.0 * (b-a) / n;
