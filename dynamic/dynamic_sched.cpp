@@ -23,13 +23,13 @@ int main (int argc, char* argv[]) {
     std::cerr<<"usage: "<<argv[0]<<" <functionid> <a> <b> <n> <intensity> <nbthreads> <granularity>"<<std::endl;
     return -1;
   }
- int functionID = std::stoi (argv[i]);
-  int a = atoi (argv[2]);
-  int b = atoi  (argv[3]);
-  int n = atoi  (argv[4]);
-  int intensity =  atoi(argv[5]);
-  int nbthreads =  atoi(argv[6]);
-  int granularity = atoi (argv[7]);
+ int functionID = atoi(argv[i]);
+  int a = atoi(argv[2]);
+  int b = atoi(argv[3]);
+  int n = atoi(argv[4]);
+  int intensity = atoi(argv[5]);
+  int nbthreads = atoi(argv[6]);
+  int granularity = atoi(argv[7]);
   
   
   float ban = 1.0 * (b-a) / n;
